@@ -1,114 +1,102 @@
-# Contributing to Agent Skills
+# 贡献指南
 
-Thank you for your interest in contributing to Agent Skills! This document explains how to contribute and where different types of feedback belong.
+感谢您对 Agent Skills 的兴趣！本文档将说明如何贡献以及不同类型的反馈应提交到哪里。
 
-## Types of Contributions
+## 贡献类型
 
-### Documentation Improvements
+### 文档改进
+我们欢迎对[文档站点](https://agentskills.io)的改进——包括错别字修复、清晰度提升、更好的示例和新指南。文档位于 `docs/` 目录中。
 
-We welcome improvements to the [documentation site](https://agentskills.io) — typo fixes, clarity improvements, better examples, and new guides. Documentation lives in the `docs/` directory.
+### Bug 报告
+在规范、文档或参考库中发现 Bug？请[提交 Issue](https://github.com/agentskills/agentskills/issues)。
 
-### Bug Reports
+### 提案、问题和反馈
+有功能请求、规范设计问题或一般性反馈？请[发起讨论](https://github.com/agentskills/agentskills/discussions)。我们使用 Discussions 来处理提案和开放式对话，并将 Issues 保留给具体的 Bug 和问题。
 
-Found a bug in the spec, documentation, or reference library? [Open an issue](https://github.com/agentskills/agentskills/issues).
+提案应解决您遇到的实际实现挑战，而非理论上的担忧。请向我们展示您面临的问题以及您的提案如何解决它。
 
-### Proposals, Questions, and Feedback
-
-Have a feature request, spec design question, or general feedback? [Start a discussion](https://github.com/agentskills/agentskills/discussions). We use Discussions for proposals and open-ended conversation, and reserve Issues for concrete bugs and problems.
-
-Proposals should address real implementation challenges you've encountered, not theoretical concerns. Show us the problem you faced and how your proposal addresses it.
-
-We maintain a high bar for additions to the spec — it is much easier to add things to a specification than to remove them. Every new feature adds complexity that all implementers must understand and support. When in doubt, leave it out.
+我们对规范的添加保持高标准——向规范添加内容比删除内容容易得多。每个新功能都会增加所有实现者必须理解和支持的复杂性。如有疑虑，就不要添加。
 
 > [!NOTE]
-> **Not sure where to post?** Default to [Discussions](https://github.com/agentskills/agentskills/discussions). If it turns out to be a bug, we'll convert it to an issue.
+> **不确定应该发布在哪里？** 默认选择 [Discussions](https://github.com/agentskills/agentskills/discussions)。如果结果发现是 Bug，我们会将其转换为 Issue。
 
-### Ecosystem Listings & Logo Requests
+### 生态系统列表和 Logo 申请
+如果您的产品或平台已实现 Agent Skills 兼容性，您可以申请被列入 [agentskills.io](https://agentskills.io)。您的产品必须公开可用，并且能够当前即可发现和执行技能——我们不列出仅宣布有意支持 Skills 或仍处于私有测试阶段的产品。
 
-If your product or platform has implemented Agent Skills compatibility, you can request to be listed on [agentskills.io](https://agentskills.io). Your product must be publicly available and able to discover and execute skills today — we do not list products that have only announced intent to support Skills or are still in private beta.
+提交 Pull Request 时需包含：
 
-Submit a pull request with:
+1. **Logo 文件** — 优先使用 SVG；PNG 也可接受（最小 200×200 像素）。提供浅色和深色两种变体，并遵循 `docs/images/logos/` 中的现有格式。
+2. **客户端条目** — 将您的产品添加到 [`docs/snippets/clients.jsx`](docs/snippets/clients.jsx) 数组中。
+3. **产品信息** — 在您的 PR 描述中包含产品名称、产品链接以及展示 Skills 实现的文档链接。
 
-1. **Logo files** — SVG preferred; PNG acceptable (min 200×200px). Provide light and dark variants and follow the existing format in `docs/images/logos/`.
-2. **A client entry** — Add your product to the array in [`docs/snippets/clients.jsx`](docs/snippets/clients.jsx).
-3. **Product information** — In your PR description, include your product name, a link to your product, and a link to documentation showing your Skills implementation.
+我们可能会要求提供演示或截图来验证实现。Logo 申请由 Anthropic 团队审核。
 
-We may ask for a demo or screenshot to verify the implementation. Logo requests are reviewed by the Anthropic team.
+### 参考库（`skills-ref/`）
+我们仍在确定参考库的方向，目前不接受代码贡献。Bug 反馈仍可通过 [Issues](https://github.com/agentskills/agentskills/issues) 提交，一般反馈可通过 [Discussions](https://github.com/agentskills/agentskills/discussions) 提交。
 
-### Reference Library (`skills-ref/`)
+### 暂不接受的贡献类型
+为了在早期阶段保持项目聚焦，我们目前不接受：
 
-We're still determining the direction for the reference library and are not accepting code contributions to it at this time. Bug reports and feedback are still welcome via [Issues](https://github.com/agentskills/agentskills/issues) and [Discussions](https://github.com/agentskills/agentskills/discussions), respectively.
+- **技能提交** — 我们不维护社区技能目录。未来可能会改变。
+- **重大架构变更** — 我们仍在迭代核心规范。大规模重新设计为时过早。
 
-### What We're Not Accepting (Yet)
+如果您不确定您的贡献是否合适，请在投入大量精力之前先发起[讨论](https://github.com/agentskills/agentskills/discussions)。
 
-To keep the project focused during this early stage, we are currently not accepting:
+## 开发环境配置
 
-- **Skill submissions** — We don't maintain a directory of community skills. This may change in the future.
-- **Major architectural changes** — We're still iterating on the core specification. Large-scale redesigns are premature.
-
-If you're unsure whether your contribution fits, open a [Discussion](https://github.com/agentskills/agentskills/discussions) before investing significant effort.
-
-## Development Setup
-
-### Documentation Site
-
-The docs site is built with [Mintlify](https://mintlify.com/).
+### 文档站点
+文档站点使用 [Mintlify](https://mintlify.com/) 构建。
 
 ```bash
-# Install Mintlify CLI
+# 安装 Mintlify CLI
 npm i -g mint
 
-# Run local dev server from the docs/ directory
+# 从 docs/ 目录运行本地开发服务器
 cd docs && mint dev
 ```
 
-Local preview will be available at `http://localhost:3000`.
+本地预览将在 `http://localhost:3000` 可用。
 
-## Submitting Changes
+## 提交更改
 
-1. [Fork the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
-2. Create a branch for your changes
-3. Make your changes and verify they work locally
-4. Submit a pull request
+1. [Fork 本仓库](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
+2. 为您的更改创建一个分支
+3. 进行更改并在本地验证其正常工作
+4. 提交 Pull Request
 
-Keep PRs focused on one logical change and link any related issues.
+保持 PR 聚焦于一个逻辑更改，并关联任何相关的 Issue。
 
-## AI Contributions
+## AI 辅助贡献
 
 > [!IMPORTANT]
-> If you are using **any kind of AI assistance** to contribute to Agent Skills, it must be disclosed in the pull request or issue.
+> 如果您使用**任何形式的 AI 辅助**来贡献 Agent Skills，必须在 Pull Request 或 Issue 中披露。
 
-We welcome and encourage the use of AI tools to help improve Agent Skills. Many valuable contributions have been enhanced with AI assistance for code generation, issue detection, and documentation.
+我们欢迎并鼓励使用 AI 工具来帮助改进 Agent Skills。许多有价值的贡献都借助 AI 辅助完成了代码生成、Issue 检测和文档编写。
 
-That being said, if you are using any kind of AI assistance (e.g., agents such as Claude Code, ChatGPT) while contributing to Agent Skills, **this must be disclosed in the pull request or issue**, along with the extent to which AI assistance was used (e.g., documentation comments vs. code generation).
+也就是说，如果您在使用任何形式的 AI 辅助（例如 Claude Code、ChatGPT 等智能体）为 Agent Skills 做出贡献，**必须在 Pull Request 或 Issue 中披露这一点**，同时说明 AI 辅助的程度（例如：文档注释还是代码生成）。
 
-If your PR responses or comments are being generated by an AI, disclose that as well.
+如果您的 PR 回复或评论是由 AI 生成的，也请披露这一点。
 
-As an exception, trivial spacing or typo fixes don't need to be disclosed.
+例外情况：微不足道的间距或错别字修复无需披露。
 
-An example disclosure:
+披露示例：
+> 本 PR 主要由 Claude Code 编写。
 
-> This PR was written primarily by Claude Code.
+或更详细的披露：
+> 我咨询了 ChatGPT 来理解代码库，但解决方案完全由我手动编写。
 
-Or a more detailed disclosure:
+未披露 AI 辅助行为首先是对 PR 另一端的人工审核人员的不尊重，同时也使得难以确定应对贡献应用多少审查力度。
 
-> I consulted ChatGPT to understand the codebase but the solution was fully authored manually by myself.
+### 我们期望的内容
+提交 AI 辅助贡献时，请确保包含：
 
-Failure to disclose AI assistance is first and foremost rude to the human reviewers on the other end of the pull request, but it also makes it difficult to determine how much scrutiny to apply to the contribution.
+- **明确披露 AI 使用** — 透明地说明 AI 使用情况和使用程度
+- **人工理解** — 您个人理解这些更改的作用
+- **明确的理由** — 能够解释为什么需要此更改以及它如何符合 Agent Skills 的目标
+- **具体证据** — 包含展示改进的测试用例、场景或示例
 
-### What we're looking for
+### 我们会关闭的内容
+我们保留关闭似乎未遵循披露政策的提交的权利。
 
-When submitting AI-assisted contributions, please ensure they include:
-
-- **Clear disclosure of AI use** — Be transparent about AI use and the degree to which you used it
-- **Human understanding** — You personally understand what the changes do
-- **Clear rationale** — You can explain why the change is needed and how it fits within Agent Skills goals
-- **Concrete evidence** — Include test cases, scenarios, or examples that demonstrate the improvement
-
-### What we'll close
-
-We reserve the right to close submissions that appear to not follow the disclosure policy.
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE) for code and specification files, and [CC-BY 4.0](docs/LICENSE) for documentation.
+## 许可证
+通过贡献，您同意您的贡献将根据 [Apache License 2.0](LICENSE)（适用于代码和规范文件）和 [CC-BY 4.0](docs/LICENSE)（适用于文档）进行许可。
