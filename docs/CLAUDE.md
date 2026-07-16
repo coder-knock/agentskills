@@ -1,23 +1,23 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. The project defines an open format for teaching AI agents specialized workflows through SKILL.md files.
+本文件为 Claude Code (claude.ai/code) 在本仓库中工作时提供指导。该项目定义了一种开放格式，用于通过 SKILL.md 文件教 AI 智能体专业化的工作流。
 
-## Documentation
+## 文档
 
-The Agent Skills documentation site, defined in the `docs/` directory, is built with [Mintlify](https://mintlify.com).
+Agent Skills 文档站点定义在 `docs/` 目录中，使用 [Mintlify](https://mintlify.com/) 构建。
 
-### Quick Start Commands
+### 快速启动命令
 
 ```bash
-# Run local development server
+# 运行本地开发服务器
 npm run dev
 ```
 
-Local preview available at `http://localhost:3000`
+本地预览可在 `http://localhost:3000` 访问
 
-### Development Notes
+### 开发注意事项
 
-- **Navigation**: Defined in `docs/docs.json` under `navigation.pages` array
-- **Adding pages**: Create new `.mdx` file in `/docs`, add filename (without extension) to navigation
-- **Deployment**: Automatic on push to `main` branch
-- **Troubleshooting**: If page shows 404, ensure you're running `mint dev` from directory containing `docs.json`
+- **导航**：定义在 `docs/docs.json` 的 `navigation.pages` 数组中
+- **添加页面**：在 `/docs` 中创建新的 `.mdx` 文件，将文件名（不带扩展名）添加到导航中
+- **部署**：推送到 `main` 分支后自动进行
+- **故障排除**：如果页面显示 404，请确保你从包含 `docs.json` 的目录运行 `mint dev`
