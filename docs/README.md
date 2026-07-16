@@ -1,17 +1,17 @@
-# Agent Skills Documentation
+# Agent Skills 文档
 
-This directory contains the source code for the Agent Skills [documentation site](https://agentskills.io/), which is built using [Mintlify](https://mintlify.com).
+本目录包含 Agent Skills [文档站点](https://agentskills.io/)的源代码，该站点使用 [Mintlify](https://mintlify.com/) 构建。
 
-## Development
+## 开发
 
-Run the following command at the documentation root, where `docs.json` is located:
+在文档根目录（即 `docs.json` 所在位置）运行以下命令：
 
 ```bash
 npx mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+在 `http://localhost:3000` 查看本地预览。
 
-## Publishing changes
+## 发布更改
 
-Changes are deployed to production automatically after pushing to the default branch.
+推送到默认分支后，更改会自动部署到生产环境。
