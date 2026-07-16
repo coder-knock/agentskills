@@ -1,0 +1,56 @@
+# Agent Skills 中文版 - 自动发布工作流
+name: 发布中文文档站点
+
+on:
+  push:
+    branches: [feature/i18n-zh-cn]
+    paths:
+      - 'docs/**'
+      - 'package.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          ref: feature/i18n-zh-cn
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 安装依赖
+        run: cd docs && npm install
+
+      - name: 构建文档站点
+        run: cd docs && npx mint build
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.mint/build
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ github.event.repository.html_url }}/zh-cn/
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
