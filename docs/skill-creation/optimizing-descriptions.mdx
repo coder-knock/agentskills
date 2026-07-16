@@ -1,193 +1,97 @@
 ---
-title: "Optimizing skill descriptions"
-sidebarTitle: "Optimizing descriptions"
-description: "How to improve your skill's description so it triggers reliably on relevant prompts."
+title: "优化技能描述"
+sidebarTitle: "优化描述"
+description: "如何改进技能的描述，使其在相关提示词上可靠地触发。"
 ---
 
-A skill only helps if it gets activated. The `description` field in your `SKILL.md` frontmatter is the primary mechanism agents use to decide whether to load a skill for a given task. An under-specified description means the skill won't trigger when it should; an over-broad description means it triggers when it shouldn't.
+只有被激活的技能才有用。`SKILL.md` frontmatter 中的 `description` 字段是智能体决定是否为给定任务加载技能的主要机制。描述不足意味着该触发时不会触发；描述过宽则会在不该触发时触发。
 
-This guide covers how to systematically test and improve your skill's description for triggering accuracy.
+本指南介绍如何系统地测试和改进技能描述，以提高触发准确率。
 
-## How skill triggering works
+## 技能触发的工作原理
 
-Agents use [progressive disclosure](/specification#progressive-disclosure) to manage context. At startup, they load only the `name` and `description` of each available skill — just enough to decide when a skill might be relevant. When a user's task matches a description, the agent reads the full `SKILL.md` into context and follows its instructions.
+智能体使用[渐进式披露](/specification#progressive-disclosure)来管理上下文。在启动时，它们只加载每个可用技能的 `name` 和 `description`——仅足以判断某个技能是否可能相关。当用户的任务与某个描述匹配时，智能体才会将完整的 `SKILL.md` 读入上下文并遵循其指令。
 
-This means the description carries the entire burden of triggering. If the description doesn't convey when the skill is useful, the agent won't know to reach for it.
+这意味着描述承担了触发的全部责任。如果描述没有传达出技能何时有用，智能体就不会知道应该使用它。
 
-One important nuance: agents typically only consult skills for tasks that require knowledge or capabilities beyond what they can handle alone. A simple, one-step request like "read this PDF" may not trigger a PDF skill even if the description matches perfectly, because the agent can handle it with basic tools. Tasks that involve specialized knowledge — an unfamiliar API, a domain-specific workflow, or an uncommon format — are where a well-written description can make the difference.
+一个重要的细微差别：智能体通常只在需要超出其自身能力的知识或能力时才咨询技能。像"读取这个 PDF"这样的简单、单步请求可能不会触发 PDF 技能，即使描述完全匹配，因为智能体可以用基本工具处理它。涉及专业化知识的任务——不熟悉的 API、特定领域的工作流或不常见的格式——才是编写良好的描述能够发挥作用的地方。
 
-## Writing effective descriptions
+## 编写有效的描述
 
-Before testing, it helps to know what a good description looks like. A few principles:
+在测试之前，了解好的描述长什么样会有帮助。几个原则：
 
-- **Use imperative phrasing.** Frame the description as an instruction to the agent: "Use this skill when..." rather than "This skill does..." The agent is deciding whether to act, so tell it when to act.
-- **Focus on user intent, not implementation.** Describe what the user is trying to achieve, not the skill's internal mechanics. The agent matches against what the user asked for.
-- **Err on the side of being pushy.** Explicitly list contexts where the skill applies, including cases where the user doesn't name the domain directly: "even if they don't explicitly mention 'CSV' or 'analysis.'"
-- **Keep it concise.** A few sentences to a short paragraph is usually right — long enough to cover the skill's scope, short enough that it doesn't bloat the agent's context across many skills. The [specification](/specification#description-field) enforces a hard limit of 1024 characters.
+- **使用祈使句式措辞。** 将描述作为对智能体的指令来表述："当……时使用此技能"，而不是"此技能用于……"。智能体正在决定是否行动，所以告诉它何时行动。
+- **关注用户意图，而非实现方式。** 描述用户试图实现什么，而非技能的内部机制。智能体根据用户请求的内容进行匹配。
+- **宁可偏于主动。** 明确列出技能适用的上下文，包括用户未直接提及领域名称的情况。
+- **保持简洁。** 几句话到一段短文通常就足够了——足够覆盖关键用例但不会使智能体的上下文膨胀。[规范](/specification#description-field) 对所有技能的总描述字符数强制执行 1024 个字符的硬性限制。
 
-## Designing trigger eval queries
+## 设计触发评估查询
 
-To test triggering, you need a set of eval queries — realistic user prompts labeled with whether they should or shouldn't trigger your skill.
+要测试触发效果，你需要一组评估查询（eval queries）——标记了是否应触发技能的真实用户提示词。
 
 ```json eval_queries.json
 [
-  { "query": "I've got a spreadsheet in ~/data/q4_results.xlsx with revenue in col C and expenses in col D — can you add a profit margin column and highlight anything under 10%?", "should_trigger": true },
+  { "query": "I've got a spreadsheet in ~/data/q4_results.xlsx with revenue in col C and expenses in col D. Can you summarize the net profit by month?", "should_trigger": true },
   { "query": "whats the quickest way to convert this json file to yaml", "should_trigger": false }
 ]
 ```
 
-Aim for about 20 queries: 8-10 that should trigger and 8-10 that shouldn't.
+目标大约 20 条查询：8-10 条应触发和 8-10 条不应触发的。
 
-### Should-trigger queries
+### 应触发的查询
 
-These test whether the description captures the skill's scope. Vary them along several axes:
+这些查询测试描述是否准确捕获了技能的范围。沿多个维度变化：
 
-- **Phrasing**: some formal, some casual, some with typos or abbreviations.
-- **Explicitness**: some name the skill's domain directly ("analyze this CSV"), others describe the need without naming it ("my boss wants a chart from this data file").
-- **Detail**: mix terse prompts with context-heavy ones — a short "analyze my sales CSV and make a chart" alongside a longer message with file paths, column names, and backstory.
-- **Complexity**: vary the number of steps and decision points. Include single-step tasks alongside multi-step workflows to test whether the agent can discern the skill is relevant when the task it addresses is buried in a larger chain.
+- **措辞**：有些正式、有些随意、有些有拼写错误或缩写。
+- **明确程度**：有些直接点名技能领域（"分析这个 CSV"），有些则描述任务而不命名领域（"我需要从这个电子表格中提取数字"）。
+- **细节**：混合简洁提示词和包含大量上下文的提示词——简短的"分析我的销售 CSV 并制作图表"和详细的提示词都应触发。
+- **复杂度**：变化的步骤数量和决策点。包括单步任务和多步骤工作流。
 
-The most useful should-trigger queries are ones where the skill would help but the connection isn't obvious from the query alone. These are the cases where description wording makes the difference — if the query already asks for exactly what the skill does, any reasonable description would trigger.
+最有价值的应触发查询是那些技能有帮助但连接并不明显的查询——如果用户明确说了"使用 X 技能"，那就不需要好的描述。
 
-### Should-not-trigger queries
+### 不应触发的查询
 
-The most valuable negative test cases are **near-misses** — queries that share keywords or concepts with your skill but actually need something different. These test whether the description is precise, not just broad.
+这些查询测试描述是否避免误触发。同样沿多个维度变化：
 
-For a CSV analysis skill, weak negative examples would be:
+- **相邻领域**：听起来相似但不属于技能范围的任务（例如，对于 CSV 分析技能来说，"将 JSON 转换为 CSV"）。
+- **通用工具使用**：可以通过通用工具完成的任务（例如，"读取这个文件"、"运行 npm install"）。
+- **错误匹配**：碰巧包含关键词但实际无关的任务（例如，对于数据分析技能来说，"分析为什么我的构建失败了"）。
 
-- `"Write a fibonacci function"` — obviously irrelevant, tests nothing.
-- `"What's the weather today?"` — no keyword overlap, too easy.
+## 运行评估
 
-Strong negative examples:
+一旦你有了评估查询集，就可以对每条查询运行评估以检查技能是否正确触发。
 
-- `"I need to update the formulas in my Excel budget spreadsheet"` — shares "spreadsheet" and "data" concepts, but needs Excel editing, not CSV analysis.
-- `"can you write a python script that reads a csv and uploads each row to our postgres database"` — involves CSV, but the task is database ETL, not analysis.
+<Tabs sync={false}>
+  <Tab title="Claude Code">
+    ```bash
+    claude --skill roll-dice -p "roll a d20"
+    ```
+  </Tab>
+  <Tab title="GitHub Copilot">
+    在 VS Code 中打开 Copilot Chat 面板，选择 Agent 模式，然后输入你的查询。
+  </Tab>
+</Tabs>
 
-### Tips for realism
+记录每条查询的结果：技能是否激活？如果激活了，输出是否正确？
 
-Real user prompts contain context that generic test queries lack. Include:
+## 基于结果迭代
 
-- File paths (`~/Downloads/report_final_v2.xlsx`)
-- Personal context (`"my manager asked me to..."`)
-- Specific details (column names, company names, data values)
-- Casual language, abbreviations, and occasional typos
+评估通常会揭示模式：
 
-## Testing whether a description triggers
+### 如果不应触发的查询触发了技能
 
-The basic approach: run each query through your agent with the skill installed and observe whether the agent invokes it. Make sure the skill is registered and discoverable by your agent — how this works varies by client (e.g., a skills directory, a configuration file, or a CLI flag).
+描述可能过于宽泛。尝试：
+- 添加更多具体约束条件
+- 移除过于通用的关键词
+- 缩小适用范围
 
-Most agent clients provide some form of observability — execution logs, tool call histories, or verbose output — that lets you see which skills were consulted during a run. Check your client's documentation for details. The skill triggered if the agent loaded your skill's `SKILL.md`; it didn't trigger if the agent proceeded without consulting it.
+### 如果应触发的查询未触发技能
 
-A query "passes" if:
-- `should_trigger` is `true` and the skill was invoked, or
-- `should_trigger` is `false` and the skill was not invoked.
+描述可能过于狭窄或缺少关键词。尝试：
+- 添加用户可能使用的同义词或替代措辞
+- 扩展涵盖的相关用例
+- 使触发信号更加明确
 
-### Running multiple times
+### 阈值调优
 
-Model behavior is nondeterministic — the same query might trigger the skill on one run but not the next. Run each query multiple times (3 is a reasonable starting point) and compute a **trigger rate**: the fraction of runs where the skill was invoked.
-
-A should-trigger query passes if its trigger rate is above a threshold (0.5 is a reasonable default). A should-not-trigger query passes if its trigger rate is below that threshold.
-
-With 20 queries at 3 runs each, that's 60 invocations. You'll want to script this. Here's the general structure — replace the `claude` invocation and detection logic in `check_triggered` with whatever your agent client provides:
-
-```bash
-#!/bin/bash
-QUERIES_FILE="${1:?Usage: $0 <queries.json>}"
-SKILL_NAME="my-skill"
-RUNS=3
-
-# This example uses Claude Code's JSON output to check for Skill tool calls.
-# Replace this function with detection logic for your agent client.
-# Should return 0 (success) if the skill was invoked, 1 otherwise.
-check_triggered() {
-  local query="$1"
-  claude -p "$query" --output-format json 2>/dev/null \
-    | jq -e --arg skill "$SKILL_NAME" \
-      'any(.messages[].content[]; .type == "tool_use" and .name == "Skill" and .input.skill == $skill)' \
-      > /dev/null 2>&1
-}
-
-count=$(jq length "$QUERIES_FILE")
-for i in $(seq 0 $((count - 1))); do
-  query=$(jq -r ".[$i].query" "$QUERIES_FILE")
-  should_trigger=$(jq -r ".[$i].should_trigger" "$QUERIES_FILE")
-  triggers=0
-
-  for run in $(seq 1 $RUNS); do
-    check_triggered "$query" && triggers=$((triggers + 1))
-  done
-
-  jq -n \
-    --arg query "$query" \
-    --argjson should_trigger "$should_trigger" \
-    --argjson triggers "$triggers" \
-    --argjson runs "$RUNS" \
-    '{query: $query, should_trigger: $should_trigger, triggers: $triggers, runs: $runs, trigger_rate: ($triggers / $runs)}'
-done | jq -s '.'
-```
-
-<Tip>
-If your agent client supports it, you can stop a run early once the outcome is clear — the agent either consulted the skill or started working without it. This can significantly reduce the time and cost of running the full eval set.
-</Tip>
-
-## Avoiding overfitting with train/validation splits
-
-If you optimize the description against all your queries, you risk overfitting — crafting a description that works for these specific phrasings but fails on new ones.
-
-The solution is to split your query set:
-
-- **Train set (~60%)**: the queries you use to identify failures and guide improvements.
-- **Validation set (~40%)**: queries you set aside and only use to check whether improvements generalize.
-
-Make sure both sets contain a proportional mix of should-trigger and should-not-trigger queries — don't accidentally put all the positives in one set. Shuffle randomly and keep the split fixed across iterations so you're comparing apples to apples.
-
-If you're using a script like the one [above](#running-multiple-times), you can split your queries into two files — `train_queries.json` and `validation_queries.json` — and run the script against each one separately.
-
-## The optimization loop
-
-1. **Evaluate** the current description on both *train and validation sets*. The train results guide your changes; the validation results tell you whether those changes are generalizing.
-2. **Identify failures** in the *train set*: which should-trigger queries didn't trigger? Which should-not-trigger queries did?
-   - Only use train set failures to guide your changes — whether you're revising the description yourself or prompting an LLM, keep validation set results out of the process.
-3. **Revise the description.** Focus on generalizing:
-   - If should-trigger queries are failing, the description may be too narrow. Broaden the scope or add context about when the skill is useful.
-   - If should-not-trigger queries are false-triggering, the description may be too broad. Add specificity about what the skill does *not* do, or clarify the boundary between this skill and adjacent capabilities.
-   - Avoid adding specific keywords from failed queries — that's overfitting. Instead, find the general category or concept those queries represent and address that.
-   - If you're stuck after several iterations, try a structurally different approach to the description rather than incremental tweaks. A different framing or sentence structure may break through where refinement can't.
-   - Check that the description stays under the 1024-character limit — descriptions tend to grow during optimization.
-4. **Repeat** steps 1-3 until all *train set* queries pass or you stop seeing meaningful improvement.
-5. **Select the best iteration** by its validation pass rate — the fraction of queries in the *validation set* that passed. Note that the best description may not be the last one you produced; an earlier iteration might have a higher validation pass rate than later ones that overfit to the train set.
-
-Five iterations is usually enough. If performance isn't improving, the issue may be with the queries (too easy, too hard, or poorly labeled) rather than the description.
-
-<Tip>
-The [`skill-creator`](https://github.com/anthropics/skills/tree/main/skills/skill-creator) Skill automates this loop end-to-end: it splits the eval set, evaluates trigger rates in parallel, proposes description improvements using Claude, and generates a live HTML report you can watch as it runs.
-</Tip>
-
-## Applying the result
-
-Once you've selected the best description:
-
-1. Update the `description` field in your `SKILL.md` frontmatter.
-2. Verify the description is under the [1024-character limit](/specification#description-field).
-3. Verify the description triggers as expected. Try a few prompts manually as a quick sanity check. For a more rigorous test, write 5-10 fresh queries (a mix of should-trigger and should-not-trigger) and run them through the eval script — since these queries were never part of the optimization process, they give you an honest check on whether the description generalizes.
-
-Before and after:
-
-```yaml
-# Before
-description: Process CSV files.
-
-# After
-description: >
-  Analyze CSV and tabular data files — compute summary statistics,
-  add derived columns, generate charts, and clean messy data. Use this
-  skill when the user has a CSV, TSV, or Excel file and wants to
-  explore, transform, or visualize the data, even if they don't
-  explicitly mention "CSV" or "analysis."
-```
-
-The improved description is more specific about what the skill does (summary stats, derived columns, charts, cleaning) and broader about when it applies (CSV, TSV, Excel; even without explicit keywords).
-
-## Next steps
-
-Once your skill triggers reliably, you'll want to evaluate whether it produces good outputs. See [Evaluating skill output quality](/skill-creation/evaluating-skills) for how to set up test cases, grade results, and iterate.
+触发是一个概率问题——不存在完美的阈值能在零误报的情况下捕获所有合法用例。目标是找到适合你技能的平衡点。对于低风险技能（如掷骰子），偏于主动更好。对于高风险技能（如修改生产数据库），偏于保守更安全。
